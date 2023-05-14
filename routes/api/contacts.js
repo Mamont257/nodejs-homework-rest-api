@@ -1,10 +1,17 @@
 const express = require("express");
+const Joi = require("joi");
 
 const contactService = require("../../models/contacts");
 
 const { HttpError } = require("../../helpers");
 
 const router = express.Router();
+
+const contactValidateSchema = Joi.object({
+  name: Joi.string().required(),
+  email: Joi.string().required(),
+  phone: Joi.string().required(),
+});
 
 router.get("/", async (req, res, next) => {
   try {
@@ -21,35 +28,59 @@ router.get("/:contactId", async (req, res, next) => {
     const result = await contactService.getContactById(contactId);
 
     if (!result) {
-      throw HttpError(404, "Contact not found");
-      // const error = new Error("Contact not found");
-      // error.status = 404;
-      // throw error;
-      // return res.status(404).json({ message: "Contact not found" });
+      throw HttpError(404, "Not found");
     }
     res.json(result);
   } catch (error) {
     next(error);
-    // const { message = "Server error", status = 500 } = error;
-    // res.status(status).json({ message });
   }
 });
 
 router.post("/", async (req, res, next) => {
   try {
-    const result = await contactService.addContact(req.body);
-    res.status(201).json(result);
+    const { error } = contactValidateSchema.validate(req.body);
+    if (!error) {
+      const result = await contactService.addContact(req.body);
+      res.status(201).json(result);
+    } else {
+      throw HttpError(400, "missing required name field");
+    }
   } catch (error) {
     next(error);
   }
 });
 
-// router.delete("/:contactId", async (req, res, next) => {
-//   res.json({ message: "template message" });
-// });
+router.delete("/:contactId", async (req, res, next) => {
+  try {
+    const { contactId } = req.params;
+    const result = await contactService.removeContact(contactId);
+    console.log(result);
+    if (!result) {
+      throw HttpError(404, "Not found");
+    }
+    res.json({
+      message: "contact deleted",
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
-// router.put("/:contactId", async (req, res, next) => {
-//   res.json({ message: "template message" });
-// });
+router.put("/:contactId", async (req, res, next) => {
+  try {
+    const { error } = contactValidateSchema.validate(req.body);
+    if (error) {
+      throw HttpError(400, error.message);
+    }
+    const { contactId } = req.params;
+    const result = await contactService.updateContactById(contactId, req.body);
+    if (!result) {
+      throw HttpError(404, "Contact not found");
+    }
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = router;
