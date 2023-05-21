@@ -13,6 +13,5 @@ mongoose
   )
   .catch((err) => {
     console.log(err.message);
-
     process.exit(1);
   });

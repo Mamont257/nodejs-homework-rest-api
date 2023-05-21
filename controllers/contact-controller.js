@@ -6,7 +6,6 @@ const { HttpError } = require("../helpers");
 
 async function getAllContacts(req, res) {
   const result = await Contact.find();
-  // console.log(result);
   res.json(result);
 }
 
@@ -28,7 +27,6 @@ async function postContact(req, res) {
 async function deleteContact(req, res) {
   const { contactId } = req.params;
   const result = await Contact.findByIdAndDelete(contactId);
-  console.log(result);
   if (!result) {
     throw HttpError(404, "Not found");
   }
@@ -39,9 +37,22 @@ async function deleteContact(req, res) {
 
 async function putContact(req, res) {
   const { contactId } = req.params;
-  const result = await Contact.findByIdAndUpdate(contactId, req.body);
+  const result = await Contact.findByIdAndUpdate(contactId, req.body, {
+    new: true,
+  });
   if (!result) {
     throw HttpError(404, "Contact not found");
+  }
+  res.json(result);
+}
+
+async function updateStatusContact(req, res) {
+  const { contactId } = req.params;
+  const result = await Contact.findByIdAndUpdate(contactId, req.body, {
+    new: true,
+  });
+  if (!result) {
+    throw HttpError(404, "Not found");
   }
   res.json(result);
 }
@@ -52,4 +63,5 @@ module.exports = {
   postContact: Wrapper(postContact),
   deleteContact: Wrapper(deleteContact),
   putContact: Wrapper(putContact),
+  updateStatusContact: Wrapper(updateStatusContact),
 };

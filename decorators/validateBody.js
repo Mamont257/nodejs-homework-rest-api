@@ -5,8 +5,13 @@ const validateBody = (schema) => {
     const { error } = schema.validate(req.body);
 
     if (error) {
-      if (!Object.keys(error._original).length) {
+      const empty = Object.keys(error._original).length;
+
+      if (req.method === "POST" && !empty) {
         next(HttpError(400, "missing fields"));
+      }
+      if (req.method === "PATCH" && !empty) {
+        next(HttpError(400, "missing field favorite"));
       }
       next(HttpError(400, error.message));
     }
