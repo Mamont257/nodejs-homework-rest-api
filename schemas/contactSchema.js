@@ -10,6 +10,7 @@ const contactValidateSchema = Joi.object({
   phone: Joi.string()
     .messages({ "any.required": "missing required phone field" })
     .required(),
+  // favorite: Joi.boolean(),
 });
 
 module.exports = {
