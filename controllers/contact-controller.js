@@ -41,7 +41,7 @@ async function putContact(req, res) {
     new: true,
   });
   if (!result) {
-    throw HttpError(404, "Contact not found");
+    throw HttpError(404, "Not found");
   }
   res.json(result);
 }

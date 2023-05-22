@@ -7,7 +7,7 @@ const validateBody = (schema) => {
     if (error) {
       const empty = Object.keys(error._original).length;
 
-      if (req.method === "POST" && !empty) {
+      if (req.method === "POST" || (req.method === "PUT" && !empty)) {
         next(HttpError(400, "missing fields"));
       }
       if (req.method === "PATCH" && !empty) {
