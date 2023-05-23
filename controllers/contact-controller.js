@@ -1,16 +1,17 @@
-const contactService = require("../models/contacts");
-const { HttpError } = require("../helpers");
+// const { HttpError } = require("../helpers");
+const Contact = require("../models/contact");
 
 const { Wrapper } = require("../decorators/wrapper");
+const { HttpError } = require("../helpers");
 
 async function getAllContacts(req, res) {
-  const result = await contactService.listContacts();
+  const result = await Contact.find();
   res.json(result);
 }
 
 async function getContactById(req, res) {
   const { contactId } = req.params;
-  const result = await contactService.getContactById(contactId);
+  const result = await Contact.findById(contactId);
   if (!result) {
     throw HttpError(404, "Not found");
   }
@@ -19,14 +20,13 @@ async function getContactById(req, res) {
 }
 
 async function postContact(req, res) {
-  const result = await contactService.addContact(req.body);
+  const result = await Contact.create(req.body);
   res.status(201).json(result);
 }
 
 async function deleteContact(req, res) {
   const { contactId } = req.params;
-  const result = await contactService.removeContact(contactId);
-  console.log(result);
+  const result = await Contact.findByIdAndDelete(contactId);
   if (!result) {
     throw HttpError(404, "Not found");
   }
@@ -37,9 +37,22 @@ async function deleteContact(req, res) {
 
 async function putContact(req, res) {
   const { contactId } = req.params;
-  const result = await contactService.updateContactById(contactId, req.body);
+  const result = await Contact.findByIdAndUpdate(contactId, req.body, {
+    new: true,
+  });
   if (!result) {
-    throw HttpError(404, "Contact not found");
+    throw HttpError(404, "Not found");
+  }
+  res.json(result);
+}
+
+async function updateStatusContact(req, res) {
+  const { contactId } = req.params;
+  const result = await Contact.findByIdAndUpdate(contactId, req.body, {
+    new: true,
+  });
+  if (!result) {
+    throw HttpError(404, "Not found");
   }
   res.json(result);
 }
@@ -50,4 +63,5 @@ module.exports = {
   postContact: Wrapper(postContact),
   deleteContact: Wrapper(deleteContact),
   putContact: Wrapper(putContact),
+  updateStatusContact: Wrapper(updateStatusContact),
 };
