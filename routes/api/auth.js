@@ -11,4 +11,10 @@ router.post(
   authController.registerUser
 );
 
+router.post(
+  "/users/login",
+  validateBody(registeredSchema),
+  authController.loginUser
+);
+
 module.exports = router;
