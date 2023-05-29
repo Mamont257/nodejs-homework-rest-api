@@ -7,19 +7,15 @@ const authController = require("../../controllers/auth");
 const authenticate = require("../../middlewares/authenticate");
 
 router.post(
-  "/users/register",
+  "/register",
   validateBody(registeredSchema),
   authController.registerUser
 );
 
-router.post(
-  "/users/login",
-  validateBody(registeredSchema),
-  authController.loginUser
-);
+router.post("/login", validateBody(registeredSchema), authController.loginUser);
 
-router.post("/users/logout", authenticate, authController.logoutUser);
+router.post("/logout", authenticate, authController.logoutUser);
 
-router.get("/users/current", authenticate, authController.currentUser);
+router.get("/current", authenticate, authController.currentUser);
 
 module.exports = router;
