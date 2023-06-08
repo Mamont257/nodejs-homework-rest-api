@@ -4,6 +4,7 @@ const gravatar = require("gravatar");
 const Jimp = require("jimp");
 const path = require("path");
 const fs = require("fs/promises");
+const { nanoid } = require("nanoid");
 
 const { User } = require("../models/user");
 const { Wrapper } = require("../decorators/wrapper");
@@ -23,13 +24,16 @@ async function registerUser(req, res) {
 
   const hashPassword = await bcryptjs.hash(password, 10);
   const avatarURL = gravatar.url("email");
+  const verificationToken = nanoid();
 
-  const { subscription = "starter" } = await User.create({
+  const newUser = await User.create({
     ...req.body,
     password: hashPassword,
     avatarURL,
+    verificationToken,
   });
-  res.status(201).json({ user: { email: email, subscription: subscription } });
+
+  res.status(201).json({ user: { email, subscription: newUser.subscription } });
 }
 
 async function loginUser(req, res) {
