@@ -19,6 +19,14 @@ const userSchema = new Schema(
     },
     avatarURL: String,
     token: String,
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+      required: [true, "Verify token is required"],
+    },
   },
   { versionKey: false, timestamps: true }
 );
@@ -40,4 +48,11 @@ const registeredSchema = Joi.object({
   token: Joi.string(),
 });
 
-module.exports = { User, registeredSchema };
+const emailSchema = Joi.object({
+  email: Joi.string()
+    .email()
+    .messages({ "any.required": "missing required field email" })
+    .required(),
+});
+
+module.exports = { User, registeredSchema, emailSchema };
